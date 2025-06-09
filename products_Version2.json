@@ -4,7 +4,7 @@
     "description": "Natural lavender soap, gentle on skin.",
     "price": 25.00,
     "image": "https://via.placeholder.com/400x300?text=Soap",
-    "category": "Bath & Body"
+    "category": "Cuidado Personal"
   },
   {
     "name": "Beaded Bracelet",
@@ -39,6 +39,6 @@
     "description": "Pack of 4 relaxing bath bombs.",
     "price": 70.00,
     "image": "https://via.placeholder.com/400x300?text=Bath+Bombs",
-    "category": "Bath & Body"
+    "category": "Cuidado Personal"
   }
 ]
