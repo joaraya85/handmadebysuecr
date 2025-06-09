@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Handmade Soap",
+    "description": "Natural lavender soap, gentle on skin.",
+    "price": 25.00,
+    "image": "https://via.placeholder.com/400x300?text=Soap",
+    "category": "Bath & Body"
+  },
+  {
+    "name": "Beaded Bracelet",
+    "description": "Colorful hand-beaded bracelet.",
+    "price": 30.00,
+    "image": "https://via.placeholder.com/400x300?text=Bracelet",
+    "category": "Jewelry"
+  },
+  {
+    "name": "Soy Candle",
+    "description": "Eco-friendly soy wax candle, vanilla scent.",
+    "price": 40.00,
+    "image": "https://via.placeholder.com/400x300?text=Candle",
+    "category": "Home Decor"
+  },
+  {
+    "name": "Crochet Basket",
+    "description": "Hand-crocheted storage basket.",
+    "price": 50.00,
+    "image": "https://via.placeholder.com/400x300?text=Basket",
+    "category": "Home Decor"
+  },
+  {
+    "name": "Earrings Set",
+    "description": "Set of 3 handmade earrings.",
+    "price": 60.00,
+    "image": "https://via.placeholder.com/400x300?text=Earrings",
+    "category": "Jewelry"
+  },
+  {
+    "name": "Bath Bombs",
+    "description": "Pack of 4 relaxing bath bombs.",
+    "price": 70.00,
+    "image": "https://via.placeholder.com/400x300?text=Bath+Bombs",
+    "category": "Bath & Body"
+  }
+]
