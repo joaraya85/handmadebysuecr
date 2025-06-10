@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Product Catalog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #f9f9f9; color: #333; }
+    .top-bg {
+      width: 100%;
+      height: 260px;
+      background: url('images/top-bg.jpg') center/cover no-repeat;
+      position: relative;
+    }
+    header { position: absolute; left: 0; right: 0; top: 60px; text-align: center; color: #fff; z-index: 1;}
+    header h1 { margin: 0; font-size: 2.5rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3);}
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+      position: relative;
+      z-index: 2;
+    }
+    .controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 1rem; }
+    .search-bar input { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; width: 220px; }
+    .category-menu { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .category-btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; background: #eee; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+    .category-btn.active { background: #222; color: #fff; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+    .product-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: box-shadow 0.2s; }
+    .product-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.16); }
+    .product-card img { width: 100%; height: 200px; object-fit: cover; }
+    .product-card h3 { margin: 1rem; font-size: 1.1rem; }
+    .product-card p { margin: 0 1rem 1rem; font-size: 0.95rem; color: #666; }
+    /* Modal styles */
+    .modal {
+      display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+    }
+    .modal.open { display: flex; }
+    .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 430px;
+      width: 98vw;
+      padding: 1.5rem 1rem 1rem 1rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .carousel-img {
+      width: 400px;
+      max-width: 90vw;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .carousel-controls {
+      display: flex; gap: 1rem; justify-content: center; align-items: center; margin-top: 1rem;
+    }
+    .carousel-dot {
+      width: 12px; height: 12px; border-radius: 50%; background: #bbb; margin: 0 2px; display: inline-block; cursor: pointer;
+    }
+    .carousel-dot.active { background: #222; }
+    .close-modal {
+      position: absolute; top: 10px; right: 20px; font-size: 2rem; color: #222; background: none; border: none; cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      .product-card img, .carousel-img { height: 150px; }
+      .top-bg { height: 120px;}
+      header h1 { font-size: 1.6rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bg"></div>
+  <header>
+    <h1>My Product Catalog</h1>
+  </header>
+  <main>
+    <div class="controls">
+      <div class="category-menu" id="categoryMenu"></div>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search products..." />
+      </div>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </main>
+  <footer>
+    &copy; 2025 Your Brand. All rights reserved.
+  </footer>
+  <!-- Modal for carousel -->
+  <div class="modal" id="carouselModal">
+    <div class="modal-content" id="modalContent">
+      <button class="close-modal" id="closeModalBtn">&times;</button>
+      <img src="" alt="" class="carousel-img" id="carouselImg" />
+      <div class="carousel-controls">
+        <button id="prevBtn">&#8592;</button>
+        <div id="carouselDots"></div>
+        <button id="nextBtn">&#8594;</button>
+      </div>
+      <div id="carouselCaption" style="margin-top:1rem; color:#222; text-align:center"></div>
+    </div>
+  </div>
+  <script>
+    let products = [];
+    let categories = [];
+    let activeCategory = "All";
+    let searchText = "";
+
+    // Carousel state
+    let carouselProduct = null;
+    let carouselIndex = 0;
+
+    function renderCategories() {
+      const menu = document.getElementById('categoryMenu');
+      menu.innerHTML = '';
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'category-btn' + (cat === activeCategory ? ' active' : '');
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+          activeCategory = cat;
+          renderCategories();
+          renderProducts();
+        });
+        menu.appendChild(btn);
+      });
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      let filtered = products.filter(p =>
+        (activeCategory === "All" || p.category === activeCategory) &&
+        (
+          p.name.toLowerCase().includes(searchText) ||
+          p.description.toLowerCase().includes(searchText)
+        )
+      );
+      grid.innerHTML = filtered.length ? filtered.map((product, idx) => `
+        <div class="product-card" data-product-idx="${products.indexOf(product)}">
+          <img src="${product.images[0]}" alt="${product.name}" />
+          <h3>${product.name}</h3>
+          <p>${product.description} Price: $${product.price.toFixed(2)}</p>
+        </div>
+      `).join('') : `<p style="grid-column: 1 / -1; text-align:center;">No products found.</p>`;
+
+      // Add click listeners for product cards
+      document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const idx = parseInt(this.getAttribute('data-product-idx'));
+          openCarousel(products[idx]);
+        });
+      });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', e => {
+      searchText = e.target.value.toLowerCase();
+      renderProducts();
+    });
+
+    // Fetch product data from products.json
+    fetch('products_Version2.json')
+      .then(response => response.json())
+      .then(data => {
+        products = data;
+        categories = ["All", ...Array.from(new Set(products.map(p => p.category)))];
+        renderCategories();
+        renderProducts();
+      })
+      .catch(err => {
+        document.getElementById('productGrid').innerHTML = '<p style="grid-column: 1 / -1; text-align:center;color:red;">Failed to load products.</p>';
+        console.error(err);
+      });
+
+    // ---- Carousel Modal ----
+    const carouselModal = document.getElementById('carouselModal');
+    const carouselImg = document.getElementById('carouselImg');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const carouselDots = document.getElementById('carouselDots');
+    const carouselCaption = document.getElementById('carouselCaption');
+    document.getElementById('closeModalBtn').onclick = closeCarousel;
+
+    function openCarousel(product) {
+      carouselProduct = product;
+      carouselIndex = 0;
+      updateCarousel();
+      carouselModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCarousel() {
+      carouselModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function updateCarousel() {
+      if (!carouselProduct) return;
+      carouselImg.src = carouselProduct.images[carouselIndex];
+      carouselImg.alt = carouselProduct.name + ' image ' + (carouselIndex + 1);
+      carouselCaption.textContent = `${carouselProduct.name} (${carouselIndex+1} of ${carouselProduct.images.length})`;
+      // Dots
+      carouselDots.innerHTML = '';
+      for (let i = 0; i < carouselProduct.images.length; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'carousel-dot' + (i === carouselIndex ? ' active' : '');
+        dot.addEventListener('click', () => {
+          carouselIndex = i;
+          updateCarousel();
+        });
+        carouselDots.appendChild(dot);
+      }
+    }
+
+    prevBtn.onclick = function() {
+      if (!carouselProduct) return;
+      carouselIndex = (carouselIndex - 1 + carouselProduct.images.length) % carouselProduct.images.length;
+      updateCarousel();
+    };
+    nextBtn.onclick = function() {
+      if (!carouselProduct) return;
+      carouselIndex = (carouselIndex + 1) % carouselProduct.images.length;
+      updateCarousel();
+    };
+
+    // Close modal on click outside modal-content or ESC
+    carouselModal.addEventListener('click', function(e) {
+      if (e.target === carouselModal) closeCarousel();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (carouselModal.classList.contains('open')) {
+        if (e.key === 'Escape') closeCarousel();
+        if (e.key === 'ArrowRight') nextBtn.click();
+        if (e.key === 'ArrowLeft') prevBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
