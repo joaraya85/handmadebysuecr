@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Handmade by Sue Catálogo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Inter', sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    .top-bg {
+      width: 100vw;
+      min-width: 100%;
+      height: 240px;
+      background: url('images/top-bg.jpg') center center/cover no-repeat;
+      position: relative;
+      left: 0;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 120px;
+      text-align: center;
+      color: #000;
+      z-index: 1;
+      pointer-events: none;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      text-shadow: none;
+      pointer-events: auto;
+    }
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+    .search-bar input {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      width: 220px;
+      max-width: 100vw;
+      box-sizing: border-box;
+    }
+    .category-menu {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .category-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      background: #eee;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .category-btn.active {
+      background: #222;
+      color: #fff;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .product-card:hover {
+      box-shadow: 0 4px 24px rgba(0,0,0,0.16);
+    }
+    .product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .product-card h3 {
+      margin: 1rem;
+      font-size: 1rem;
+    }
+    .product-card p {
+      margin: 0 1rem 1rem;
+      font-size: 0.95rem;
+      color: #666;
+    }
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.open { display: flex; }
+    .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 540px;
+      width: 98vw;
+      padding: 1.5rem 1rem 1rem 1rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .carousel-img {
+      width: 90vw;
+      max-width: 400px;
+      height: 45vw;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(.4,2,.6,1);
+      cursor: pointer;
+    }
+    .carousel-controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .carousel-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #bbb;
+      margin: 0 2px;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .carousel-dot.active { background: #222; }
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 2rem;
+      color: #222;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    /* Floating WhatsApp Button */
+    .whatsapp-float {
+      position: fixed;
+      width: 64px;
+      height: 64px;
+      bottom: 32px;
+      right: 32px;
+      background-color: transparent;
+      color: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+      border: none;
+      padding: 0;
+    }
+    .whatsapp-float:hover {
+      box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+    }
+    .whatsapp-logo {
+      width: 56px;
+      height: 56px;
+      display: block;
+    }
+    footer {
+      width: 100%;
+      text-align: center;
+      margin-top: auto;
+      padding: 1rem 0;
+      background: none;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .top-bg {
+        height: 80px;
+      }
+      header {
+        top: 30px;
+      }
+      header h1 {
+        font-size: 1.1rem;
+      }
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      main {
+        margin: 1rem 0;
+        padding: 0.5rem;
+      }
+      .product-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      .product-card img {
+        height: 120px;
+      }
+      .whatsapp-float {
+        width: 48px;
+        height: 48px;
+        bottom: 16px;
+        right: 16px;
+      }
+      .whatsapp-logo {
+        width: 40px;
+        height: 40px;
+      }
+      .modal-content {
+        max-width: 99vw;
+        padding: 0.5rem;
+      }
+      .carousel-img {
+        width: 98vw;
+        max-width: 98vw;
+        height: 45vw;
+        max-height: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bg"></div>
+  <header>
+    <h1>Mi Catálogo de Productos</h1>
+  </header>
+  <div class="content-wrapper">
+    <main>
+      <div class="controls">
+        <div class="category-menu" id="categoryMenu"></div>
+        <div class="search-bar">
+          <input type="text" id="searchInput" placeholder="Buscar productos..." />
+        </div>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </main>
+  </div>
+  <footer>
+    &copy; 2025 Your Brand. All rights reserved.
+  </footer>
+  <!-- Modal for carousel -->
+  <div class="modal" id="carouselModal">
+    <div class="modal-content" id="modalContent">
+      <button class="close-modal" id="closeModalBtn">&times;</button>
+      <img src="" alt="" class="carousel-img" id="carouselImg" />
+      <div class="carousel-controls">
+        <button id="prevBtn">&#8592;</button>
+        <div id="carouselDots"></div>
+        <button id="nextBtn">&#8594;</button>
+      </div>
+      <div id="carouselCaption" style="margin-top:1rem; color:#222; text-align:center"></div>
+    </div>
+  </div>
+  <!-- Floating WhatsApp Button -->
+  <a href="https://api.whatsapp.com/send?phone=50688316855" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
+    <img src="images/Digital_Glyph_Green.svg" alt="WhatsApp" class="whatsapp-logo" />
+  </a>
+  <script>
+    let products = [];
+    let categories = [];
+    let activeCategory = "All";
+    let searchText = "";
+
+    // Carousel state
+    let carouselProduct = null;
+    let carouselIndex = 0;
+
+    function renderCategories() {
+      const menu = document.getElementById('categoryMenu');
+      menu.innerHTML = '';
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'category-btn' + (cat === activeCategory ? ' active' : '');
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+          activeCategory = cat;
+          renderCategories();
+          renderProducts();
+        });
+        menu.appendChild(btn);
+      });
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      let filtered = products.filter(p =>
+        (activeCategory === "All" || p.category === activeCategory) &&
+        (
+          p.name.toLowerCase().includes(searchText) ||
+          p.description.toLowerCase().includes(searchText)
+        )
+      );
+      grid.innerHTML = filtered.length ? filtered.map((product, idx) => `
+        <div class="product-card" data-product-idx="${products.indexOf(product)}">
+          <img src="${product.images[0]}" alt="${product.name}" />
+          <h3>${product.name}</h3>
+          <p>${product.description} Price: $${product.price.toFixed(2)}</p>
+        </div>
+      `).join('') : `<p style="grid-column: 1 / -1; text-align:center;">No products found.</p>`;
+
+      // Add click listeners for product cards
+      document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const idx = parseInt(this.getAttribute('data-product-idx'));
+          openCarousel(products[idx]);
+        });
+      });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', e => {
+      searchText = e.target.value.toLowerCase();
+      renderProducts();
+    });
+
+    // Fetch product data from products.json
+    fetch('products_Version2.json')
+      .then(response => response.json())
+      .then(data => {
+        products = data;
+        categories = ["All", ...Array.from(new Set(products.map(p => p.category)))];
+        renderCategories();
+        renderProducts();
+      })
+      .catch(err => {
+        document.getElementById('productGrid').innerHTML = '<p style="grid-column: 1 / -1; text-align:center;color:red;">Failed to load products.</p>';
+        console.error(err);
+      });
+
+    // ---- Carousel Modal ----
+    const carouselModal = document.getElementById('carouselModal');
+    const carouselImg = document.getElementById('carouselImg');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const carouselDots = document.getElementById('carouselDots');
+    const carouselCaption = document.getElementById('carouselCaption');
+    document.getElementById('closeModalBtn').onclick = closeCarousel;
+
+    function openCarousel(product) {
+      carouselProduct = product;
+      carouselIndex = 0;
+      updateCarousel();
+      carouselModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCarousel() {
+      carouselModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function updateCarousel() {
+      if (!carouselProduct) return;
+      carouselImg.src = carouselProduct.images[carouselIndex];
+      carouselImg.alt = carouselProduct.name + ' image ' + (carouselIndex + 1);
+      carouselCaption.textContent = `${carouselProduct.name} (${carouselIndex+1} de ${carouselProduct.images.length})`;
+      // Dots
+      carouselDots.innerHTML = '';
+      for (let i = 0; i < carouselProduct.images.length; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'carousel-dot' + (i === carouselIndex ? ' active' : '');
+        dot.addEventListener('click', () => {
+          carouselIndex = i;
+          updateCarousel();
+        });
+        carouselDots.appendChild(dot);
+      }
+    }
+
+    prevBtn.onclick = function() {
+      if (!carouselProduct) return;
+      carouselIndex = (carouselIndex - 1 + carouselProduct.images.length) % carouselProduct.images.length;
+      updateCarousel();
+    };
+    nextBtn.onclick = function() {
+      if (!carouselProduct) return;
+      carouselIndex = (carouselIndex + 1) % carouselProduct.images.length;
+      updateCarousel();
+    };
+
+    // Carousel image click: open in new tab with description
+    carouselImg.addEventListener('click', function(e) {
+      if (!carouselProduct) return;
+      const imgUrl = carouselProduct.images[carouselIndex];
+      const productName = carouselProduct.name;
+      const imgDesc = `${productName} (Foto ${carouselIndex + 1} de ${carouselProduct.images.length})`;
+
+      // Open a new tab with custom HTML for image + description
+      const newWindow = window.open('');
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>${imgDesc}</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body { margin:0; background:#fff; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; }
+              img { max-width:98vw; max-height:80vh; border-radius:10px; box-shadow:0 2px 16px rgba(0,0,0,0.12);}
+              .desc { margin-top:2rem; font-size:1.2rem; color:#222; text-align:center;}
+            </style>
+          </head>
+          <body>
+            <img src="${imgUrl}" alt="${imgDesc}" />
+            <div class="desc">${imgDesc}</div>
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
+      e.stopPropagation();
+    });
+
+    // Close modal when clicking outside modal-content or pressing Escape
+    carouselModal.addEventListener('click', function(e) {
+      if (e.target === carouselModal) {
+        closeCarousel();
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (carouselModal.classList.contains('open')) {
+        if (e.key === 'Escape') {
+          closeCarousel();
+        }
+        if (e.key === 'ArrowRight') nextBtn.click();
+        if (e.key === 'ArrowLeft') prevBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
