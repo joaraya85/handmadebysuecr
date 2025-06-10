@@ -6,6 +6,11 @@
   <title>Handmade by Sue Catálogo</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
@@ -45,12 +50,18 @@
       text-shadow: 0 2px 8px rgba(0,0,0,0.3);
       pointer-events: auto;
     }
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
     main {
       max-width: 1000px;
       margin: 2rem auto;
       padding: 1rem;
       position: relative;
       z-index: 2;
+      flex: 1;
     }
     .controls {
       display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
@@ -203,6 +214,14 @@
     height: 40px;
   }
 }
+    /* Footer always centered */
+    footer {
+      width: 100%;
+      text-align: center;
+      margin-top: auto;
+      padding: 1rem 0;
+      background: none;
+    }    
   </style>
 </head>
 <body>
@@ -210,15 +229,17 @@
   <header>
     <h1>Mi Catálogo de Productos</h1>
   </header>
+  <div class="content-wrapper">
   <main>
     <div class="controls">
       <div class="category-menu" id="categoryMenu"></div>
       <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search products..." />
+        <input type="text" id="searchInput" placeholder="Buscar Productos..." />
       </div>
     </div>
     <div class="product-grid" id="productGrid"></div>
   </main>
+  </div>
   <footer>
     &copy; 2025 Handmade by Sue C.R. Todos los derechos reservados.
   </footer>
@@ -235,8 +256,6 @@
       <div id="carouselCaption" style="margin-top:1rem; color:#222; text-align:center"></div>
     </div>
   </div>
-  <!-- Floating WhatsApp Button -->
-<!-- ...previous HTML remains unchanged up to the floating WhatsApp button... -->
   <!-- Floating WhatsApp Button -->
 <a href="https://api.whatsapp.com/send?phone=50688316855
 " class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
