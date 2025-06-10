@@ -10,12 +10,17 @@
   .top-bg {
     width: 100vw;
     min-width: 100%;
-    height: 260px;
+    height: 120px;
     background: url('images/top-bg.jpg') center center/cover no-repeat;
     position: relative;
     left: 0;
     margin: 0;
     padding: 0;
+    }
+    @media (max-width: 600px) {
+    .top-bg {
+    height: 60px; /* Even smaller for mobile */
+      }
     }
     header { position: absolute; left: 0; right: 0; top: 60px; text-align: center; color: #fff; z-index: 1;}
     header h1 { margin: 0; font-size: 2.5rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3);}
