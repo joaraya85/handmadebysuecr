@@ -2,9 +2,33 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
+const basicAuth = require('express-basic-auth');
 
 const app = express();
 const db = new sqlite3.Database('./catalog.db');
+
+// Use environment variables or hard-code for demo
+const ADMIN_USER = process.env.ADMIN_USER || "admin";
+const ADMIN_PASS = process.env.ADMIN_PASS || "secret";
+
+// Protect /admin and all subroutes
+app.use('/admin', basicAuth({
+  users: { [ADMIN_USER]: ADMIN_PASS },
+  challenge: true,
+  unauthorizedResponse: (req) => 'Unauthorized: Admins only'
+}));
+
+// Example admin route
+app.get('/admin', (req, res) => {
+  res.send('Welcome to the admin section!');
+});
+
+// ... your other routes and code
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 app.use(cors());
 app.use(bodyParser.json());
